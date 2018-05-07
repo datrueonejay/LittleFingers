@@ -20,17 +20,14 @@ import com.datrueonejay.littlefingers.R;
  * View model for the main menu
  */
 
-public class MainMenuViewModel extends View {
+public class MainMenuViewModel extends BaseViewModel{
 
-    private Context context;
     private LinearLayout linearLayout;
     private WindowManager windowManager;
-    private boolean isClick;
 
-    public MainMenuViewModel (Context context)
+    public MainMenuViewModel(Context context)
     {
         super(context);
-        this.context = context;
         this.linearLayout = new LinearLayout(context);
     }
 
@@ -39,12 +36,11 @@ public class MainMenuViewModel extends View {
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                 PixelFormat.TRANSLUCENT
         );
         params.gravity = Gravity.LEFT;
-
         this.windowManager = (WindowManager) this.context.getSystemService(Context.WINDOW_SERVICE);
         windowManager.addView(linearLayout, params);
         LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

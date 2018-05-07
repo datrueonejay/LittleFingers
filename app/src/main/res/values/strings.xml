@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">LittleFingers</string>
+    <string name="permission_description">Please ensure the app can draw over apps.</string>
+    <string name="no_permission_button">Click to give permission</string>
+    <string name="yes_permission_button">Click to continue</string>
 </resources>
