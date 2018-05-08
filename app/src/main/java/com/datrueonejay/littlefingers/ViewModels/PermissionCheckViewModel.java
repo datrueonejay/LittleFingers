@@ -1,13 +1,17 @@
 package com.datrueonejay.littlefingers.ViewModels;
 
-import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
 public class PermissionCheckViewModel extends ViewModel {
 
-    private LiveData<Boolean> isPermissionEnabled;
+   private MutableLiveData<Boolean> isPermissionEnabled;
 
-    public LiveData<Boolean> getIsPermissionEnabled() {
+    public MutableLiveData<Boolean> getIsPermissionEnabled() {
+        if (isPermissionEnabled == null)
+        {
+            isPermissionEnabled = new MutableLiveData<>();
+        }
         return isPermissionEnabled;
     }
 }
