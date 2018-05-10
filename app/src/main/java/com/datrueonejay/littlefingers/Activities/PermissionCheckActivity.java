@@ -12,21 +12,25 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.datrueonejay.littlefingers.Constants.Constants;
 import com.datrueonejay.littlefingers.R;
 import com.datrueonejay.littlefingers.Services.MainMenuService;
 import com.datrueonejay.littlefingers.ViewModels.PermissionCheckViewModel;
 
 public class PermissionCheckActivity extends AppCompatActivity {
 
+    //region Properties
     private final static int OVERLAY_REQUEST_CODE = 0;
     private Context _context;
     private PermissionCheckViewModel permissionCheckViewModel;
+    private int mainMenuLayout = R.layout.menu_button;
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        this._context = this;
+        this._context = this.getApplicationContext();
 
         permissionCheckViewModel = ViewModelProviders.of(this).get(PermissionCheckViewModel.class);
 
@@ -65,7 +69,7 @@ public class PermissionCheckActivity extends AppCompatActivity {
             continueButton.setOnClickListener(button -> {
                 if (permissionCheckViewModel.getIsPermissionEnabled().getValue())
                 {
-                    this.startService(new Intent(this._context, MainMenuService.class));
+                    this.startMainMenuService(mainMenuLayout);
                     finish();
                 }
                 else
@@ -77,15 +81,14 @@ public class PermissionCheckActivity extends AppCompatActivity {
         // start the service if we already have permission
         else
         {
-            this.startService(new Intent(this._context, MainMenuService.class));
+            this.startMainMenuService(mainMenuLayout);
             finish();
         }
-
-
-//        createDrawOverPermission();
     }
 
 
+
+    //region Private Methods
     @TargetApi(23)
     private void promptDrawOverPermission()
     {
@@ -96,7 +99,16 @@ public class PermissionCheckActivity extends AppCompatActivity {
 
     }
 
+    private void startMainMenuService(int layout)
+    {
+        Intent mainMenuService = new Intent(this._context, MainMenuService.class);
+        mainMenuService.putExtra(Constants.MAIN_MENU_LAYOUT_EXTRA, layout);
+        this._context.startService(mainMenuService);
+    }
+    //endregion
 
+
+    //region Overriden methods
     @Override
     @TargetApi(23)
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -110,4 +122,7 @@ public class PermissionCheckActivity extends AppCompatActivity {
                 }
         }
     }
+    //endregion
+
+
 }
