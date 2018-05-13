@@ -120,7 +120,12 @@ public class PermissionCheckActivity extends AppCompatActivity {
                 {
                     permissionCheckViewModel.getIsPermissionEnabled().setValue(true);
                 }
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
         }
+
     }
     //endregion
 

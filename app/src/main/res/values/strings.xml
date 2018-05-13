@@ -5,4 +5,8 @@
     <string name="no_permission_button_description">Click to give permission</string>
     <string name="yes_permission_button_description">Click to continue</string>
     <string name="click_to_start">Click for options</string>
+    <string name="options_title">Options</string>
+
+    <string name="start_screen_lock">Start Screen Lock</string>
+    <string name="close_app">Close App</string>
 </resources>
