@@ -19,7 +19,7 @@
         android:rowCount="1">
 
         <LinearLayout
-            android:id="@+id/screenLockButton"
+            android:id="@+id/lockScreenButton"
             android:orientation="vertical"
             android:layout_columnWeight="1">
 
@@ -42,8 +42,7 @@
         <LinearLayout
             android:id="@+id/closeAppButton"
             android:orientation="vertical"
-            android:layout_columnWeight="1"
-            android:clickable="true">
+            android:layout_columnWeight="1">
 
             <TextView
                 android:layout_width="match_parent"

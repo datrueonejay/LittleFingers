@@ -3,6 +3,7 @@ package com.datrueonejay.littlefingers.Services;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Service;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
@@ -13,10 +14,13 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.datrueonejay.littlefingers.Constants.Constants;
 import com.datrueonejay.littlefingers.R;
+import com.datrueonejay.littlefingers.ViewModels.LockedScreenViewModel;
+import com.datrueonejay.littlefingers.ViewModels.PermissionCheckViewModel;
 
 public class MainMenuService extends Service {
 
@@ -27,9 +31,16 @@ public class MainMenuService extends Service {
     private int lastAction;
     private int startId = -1;
 
-    private View viewInWindow;
-    private WindowManager windowManager;
+    private boolean isButtonOneHeld;
+    private boolean isButtonTwoHeld;
+    private boolean isButtonThreeHeld;
+    private boolean isButtonFourHeld;
 
+    private LayoutInflater inflater;
+
+    private View viewInWindow;
+    private View lockedScreen;
+    private WindowManager windowManager;
     //endregion
 
     @Override
@@ -39,7 +50,9 @@ public class MainMenuService extends Service {
        {
            this.startId = startId;
            this.layoutAsInt = intent.getIntExtra(Constants.MAIN_MENU_LAYOUT_EXTRA, 0);
+           this.inflater = LayoutInflater.from(this.getApplication());
            displayDraggableView();
+
        }
        return START_STICKY;
     }
@@ -63,10 +76,14 @@ public class MainMenuService extends Service {
         this.windowManager = (WindowManager) this.getApplication().getSystemService(Context.WINDOW_SERVICE);
         // base layout for options button
         FrameLayout linearLayout = new FrameLayout(this.getApplication());
-        LayoutInflater inflater = LayoutInflater.from(this.getApplication());
         this.viewInWindow = inflater.inflate(layoutAsInt, linearLayout);
         setUpDraggableView(this.viewInWindow, this.windowManager, params);
         this.windowManager.addView(this.viewInWindow, params);
+    }
+
+    public void displayLockedScreenView()
+    {
+
     }
 
     @Override
@@ -109,11 +126,57 @@ public class MainMenuService extends Service {
                 {
                     if (lastAction == MotionEvent.ACTION_DOWN)
                     {
+                        view.performClick();
                         AlertDialog.Builder builder = new AlertDialog.Builder(this.getApplication());
-                        LayoutInflater inflater = LayoutInflater.from(this.getApplication());
-                        View view2 = inflater.inflate(R.layout.options_menu, null);
-                        Dialog dialog = builder.setView(view2).create();
-                        view2.findViewById(R.id.options).findViewById(R.id.closeAppButton).setOnClickListener(v ->
+                        View optionsMenu = inflater.inflate(R.layout.options_menu, null);
+                        Dialog dialog = builder.setView(optionsMenu).create();
+
+                        optionsMenu.findViewById(R.id.options).findViewById(R.id.lockScreenButton).setOnClickListener(v ->
+                        {
+                            WindowManager.LayoutParams params2 = new WindowManager.LayoutParams(
+                                    WindowManager.LayoutParams.MATCH_PARENT,
+                                    WindowManager.LayoutParams.MATCH_PARENT,
+                                    WindowManager.LayoutParams.TYPE_PHONE,
+                                    WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                                    PixelFormat.TRANSLUCENT);
+//                            params.gravity = Gravity.TOP | Gravity.LEFT;
+//                            params.x = 0;
+//                            params.y = 0;
+                            lockedScreen = inflater.inflate(R.layout.locked_screen, null);
+                            lockedScreen.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE);
+                            lockedScreen.setOnSystemUiVisibilityChangeListener(listener ->
+                                lockedScreen.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE)
+                            );
+
+                            Button buttonOne = lockedScreen.findViewById(R.id.buttonOne);
+                            Button buttonTwo = lockedScreen.findViewById(R.id.buttonTwo);
+                            Button buttonThree = lockedScreen.findViewById(R.id.buttonThree);
+                            Button buttonFour = lockedScreen.findViewById(R.id.buttonFour);
+
+                            buttonOne.setOnTouchListener((v1, e1) ->
+                            {
+                                switch (event.getActionMasked())
+                                {
+                                    case (MotionEvent.ACTION_DOWN):
+                                        isButtonOneHeld = true;
+                                        break;
+                                    case (MotionEvent.ACTION_UP):
+                                        isButtonOneHeld = false;
+                                        v1.performClick();
+                                        break;
+                                        default:
+                                            return false;
+                                }
+                                return true;
+                            });
+
+                            dialog.dismiss();
+                            windowManager.removeView(viewInWindow);
+                            windowManager.addView(lockedScreen, params2);
+
+                        });
+
+                        optionsMenu.findViewById(R.id.options).findViewById(R.id.closeAppButton).setOnClickListener(v ->
                         {
                             stopService(new Intent(getApplication(), MainMenuService.class));
                             dialog.dismiss();
@@ -136,7 +199,6 @@ public class MainMenuService extends Service {
 
     private View setUpOptionsMenu(int viewAsInt)
     {
-        LayoutInflater inflater = LayoutInflater.from(this.getApplication());
         View view = inflater.inflate(viewAsInt, null);
         view.findViewById(R.id.options).findViewById(R.id.closeAppButton).setOnClickListener(v ->
                 {
