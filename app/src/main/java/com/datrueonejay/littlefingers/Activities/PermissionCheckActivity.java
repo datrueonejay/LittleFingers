@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.datrueonejay.littlefingers.Constants.Constants;
 import com.datrueonejay.littlefingers.R;
 import com.datrueonejay.littlefingers.Services.MainMenuService;
 import com.datrueonejay.littlefingers.ViewModels.PermissionCheckViewModel;
@@ -102,7 +101,6 @@ public class PermissionCheckActivity extends AppCompatActivity {
     private void startMainMenuService(int layout)
     {
         Intent mainMenuService = new Intent(this._context, MainMenuService.class);
-        mainMenuService.putExtra(Constants.MAIN_MENU_LAYOUT_EXTRA, layout);
         this._context.startService(mainMenuService);
     }
     //endregion
