@@ -1,5 +1,6 @@
 package com.datrueonejay.littlefingers.Services;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Service;
@@ -8,7 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -45,6 +48,14 @@ public class MainMenuService extends Service {
     private Button lockedScreenButtonTwo;
     private Button lockedScreenButtonThree;
     private Button lockedScreenButtonFour;
+
+    // in milliseconds
+    private int timeToHoldButton = 2000;
+
+    private Rect rect1;
+    private Rect rect2;
+    private Rect rect3;
+    private Rect rect4;
 
     private LayoutInflater inflater;
 
@@ -233,20 +244,47 @@ public class MainMenuService extends Service {
                 PixelFormat.TRANSLUCENT);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setUpLockedScreen()
     {
+        Handler handler = new Handler();
+        Runnable run1 = () -> {
+            isButtonOneHeld = true;
+            stopLockedScreen();
+        };
+
+        Runnable run2 = () -> {
+            isButtonTwoHeld = true;
+            stopLockedScreen();
+        };
+
+        Runnable run3 = () -> {
+            isButtonThreeHeld = true;
+            stopLockedScreen();
+        };
+
+        Runnable run4 = () -> {
+            isButtonFourHeld = true;
+            stopLockedScreen();
+        };
+
         this.lockedScreenButtonOne.setOnTouchListener((v1, e1) ->
         {
             switch (e1.getActionMasked())
             {
                 case (MotionEvent.ACTION_DOWN):
-                    isButtonOneHeld = true;
-                    this.stopLockedScreen();
+                    rect1 = new Rect(v1.getLeft(), v1.getTop(), v1.getRight(), v1.getBottom());
+                    handler.postDelayed(run1, this.timeToHoldButton);
                     break;
                 case (MotionEvent.ACTION_UP):
                     isButtonOneHeld = false;
+                    handler.removeCallbacks(run1);
                     v1.performClick();
                     break;
+                case (MotionEvent.ACTION_MOVE):
+                    if(!rect1.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY())){
+                        handler.removeCallbacks(run1);
+                    }
                 default:
                     return false;
             }
@@ -258,12 +296,18 @@ public class MainMenuService extends Service {
             switch (e1.getActionMasked())
             {
                 case (MotionEvent.ACTION_DOWN):
-                    isButtonTwoHeld = true;
+                    rect2 = new Rect(v1.getLeft(), v1.getTop(), v1.getRight(), v1.getBottom());
+                    handler.postDelayed(run2, this.timeToHoldButton);
                     break;
                 case (MotionEvent.ACTION_UP):
+                    handler.removeCallbacks(run2);
                     isButtonTwoHeld = false;
                     v1.performClick();
                     break;
+                case (MotionEvent.ACTION_MOVE):
+                    if(!rect2.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY())){
+                        handler.removeCallbacks(run1);
+                    }
                 default:
                     return false;
             }
@@ -275,12 +319,17 @@ public class MainMenuService extends Service {
             switch (e1.getActionMasked())
             {
                 case (MotionEvent.ACTION_DOWN):
-                    isButtonThreeHeld = true;
+                    rect3 = new Rect(v1.getLeft(), v1.getTop(), v1.getRight(), v1.getBottom());
+                    handler.postDelayed(run3, this.timeToHoldButton);
                     break;
                 case (MotionEvent.ACTION_UP):
                     isButtonThreeHeld = false;
                     v1.performClick();
                     break;
+                case (MotionEvent.ACTION_MOVE):
+                    if(!rect3.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY())){
+                        handler.removeCallbacks(run1);
+                    }
                 default:
                     return false;
             }
@@ -292,12 +341,17 @@ public class MainMenuService extends Service {
             switch (e1.getActionMasked())
             {
                 case (MotionEvent.ACTION_DOWN):
-                    isButtonFourHeld = true;
+                    rect4 = new Rect(v1.getLeft(), v1.getTop(), v1.getRight(), v1.getBottom());
+                    handler.postDelayed(run4, this.timeToHoldButton);
                     break;
                 case (MotionEvent.ACTION_UP):
                     isButtonFourHeld = false;
                     v1.performClick();
                     break;
+                case (MotionEvent.ACTION_MOVE):
+                    if(!rect4.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY())){
+                        handler.removeCallbacks(run1);
+                    }
                 default:
                     return false;
             }

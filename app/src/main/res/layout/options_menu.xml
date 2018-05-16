@@ -12,7 +12,7 @@
         android:text="@string/options_title"
         android:textAlignment="center"
         android:textSize="20sp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/grey"
         android:layout_marginBottom="10sp"/>
 
     <GridLayout
@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/start_screen_lock"
                 android:textSize="16sp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/grey"
                 android:textAlignment="center"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10sp"/>
@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/close_app"
                 android:textSize="16sp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/grey"
                 android:textAlignment="center"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10sp"/>
