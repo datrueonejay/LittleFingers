@@ -3,24 +3,25 @@
     android:orientation="vertical"
     android:layout_width="200sp"
     android:layout_height="200sp"
-    android:background="@drawable/rounded_rectangle">
+    >
 
-    <TextView
-        android:id="@+id/options_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/options_title"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:textColor="@color/grey"
-        android:layout_marginBottom="10sp"/>
+    <!--<TextView-->
+        <!--android:id="@+id/options_title"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/options_title"-->
+        <!--android:textAlignment="center"-->
+        <!--android:textSize="20sp"-->
+        <!--android:textColor="@color/grey"-->
+        <!--android:layout_marginBottom="10sp"/>-->
 
     <GridLayout
         android:id="@+id/options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:columnCount="2"
-        android:rowCount="1">
+        android:rowCount="1"
+        android:background="@drawable/rounded_rectangle">
 
         <LinearLayout
             android:id="@+id/lockScreenButton"
@@ -68,5 +69,12 @@
 
         </LinearLayout>
     </GridLayout>
+
+    <ImageView
+        android:layout_gravity="center_horizontal"
+        android:layout_width="35sp"
+        android:layout_height="35sp"
+        android:src="@drawable/triangle"
+        android:rotation="180"/>
 
 </LinearLayout>
