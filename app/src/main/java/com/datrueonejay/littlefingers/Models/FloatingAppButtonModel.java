@@ -9,6 +9,8 @@ public class FloatingAppButtonModel {
 
     public final int floatingAppButtonLayoutAsInt = R.layout.menu_button;
 
+    public boolean isShowing;
+
     public float currX;
     public float currY;
     public int lastAction;

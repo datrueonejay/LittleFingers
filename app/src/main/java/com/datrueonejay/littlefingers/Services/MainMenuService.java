@@ -19,12 +19,19 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 
 import com.datrueonejay.littlefingers.Models.*;
 import com.datrueonejay.littlefingers.R;
+
+import java.io.Console;
 
 public class MainMenuService extends Service {
 
@@ -103,7 +110,6 @@ public class MainMenuService extends Service {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT
         );
-        //floatingAppButtonModel.floatingAppButtonParams.windowAnimations = android.R.style.Animation_Translucent;
         floatingAppButtonModel.floatingAppButtonParams.gravity = Gravity.CENTER_HORIZONTAL;
         floatingAppButtonModel.floatingAppButton = inflater.inflate(floatingAppButtonModel.floatingAppButtonLayoutAsInt, null);
     }
@@ -132,6 +138,7 @@ public class MainMenuService extends Service {
                     windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
 
                     floatingAppButtonModel.lastAction = MotionEvent.ACTION_MOVE;
+                    removeOptionsMenu();
                     break;
                 }
 
@@ -142,41 +149,31 @@ public class MainMenuService extends Service {
                         view.performClick();
                         ValueAnimator translationDown = ValueAnimator.ofFloat(floatingAppButtonModel.floatingAppButtonParams.y, currHeight/2 - floatingAppButtonModel.floatingAppButton.getHeight()/2);
                         ValueAnimator translationCenter = ValueAnimator.ofFloat(floatingAppButtonModel.floatingAppButtonParams.x, 0);
-                        translationCenter.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animation) {
-                                floatingAppButtonModel.floatingAppButtonParams.x = (int) Math.round((float)translationCenter.getAnimatedValue());
-                                windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
-                            }
+                        translationCenter.addUpdateListener(animation -> {
+                            floatingAppButtonModel.floatingAppButtonParams.x = Math.round((float)translationCenter.getAnimatedValue());
+                            windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
                         });
-                        translationDown.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animation) {
-                                floatingAppButtonModel.floatingAppButtonParams.y = (int) Math.round((float)translationDown.getAnimatedValue());
-                                windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
-                            }
+                        translationDown.addUpdateListener(animation -> {
+                            floatingAppButtonModel.floatingAppButtonParams.y = Math.round((float)translationDown.getAnimatedValue());
+                            windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
                         });
 
                         translationDown.addListener(new Animator.AnimatorListener() {
                             @Override
                             public void onAnimationStart(Animator animation) {
-
                             }
 
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 displayOptionsMenu();
-
                             }
 
                             @Override
                             public void onAnimationCancel(Animator animation) {
-
                             }
 
                             @Override
                             public void onAnimationRepeat(Animator animation) {
-
                             }
                         });
                         translationDown.setDuration(500);
@@ -184,13 +181,8 @@ public class MainMenuService extends Service {
                         translationDown.start();
                         translationCenter.start();
 
-                        //floatingAppButtonModel.floatingAppButtonParams.y = currHeight/2 - floatingAppButtonModel.floatingAppButton.getHeight()/2;
-                        //floatingAppButtonModel.floatingAppButtonParams.x = 0;
-//                        floatingAppButtonModel.currY = currHeight/2 - floatingAppButtonModel.floatingAppButton.getHeight()/2;
                         windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
 
-//                        this.removeFloatingAppButton();
-//                        this.displayOptionsMenu();
                     }
                 }
                 default:
@@ -202,12 +194,60 @@ public class MainMenuService extends Service {
 
     private void displayFloatingAppButton()
     {
-        this.windowManager.addView(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
+        try
+        {
+            if (!floatingAppButtonModel.isShowing)
+            {
+                Animation fadeIn = new AlphaAnimation(0, 1);
+                fadeIn.setInterpolator(new DecelerateInterpolator()); //add this
+                fadeIn.setDuration(1000);
+                this.windowManager.addView(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
+                floatingAppButtonModel.floatingAppButton.findViewById(R.id.floatingButtonContainer).startAnimation(fadeIn);
+                floatingAppButtonModel.isShowing = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     private void removeFloatingAppButton()
     {
-        this.windowManager.removeViewImmediate(floatingAppButtonModel.floatingAppButton);
+        try
+        {
+            if (floatingAppButtonModel.isShowing)
+            {
+                floatingAppButtonModel.isShowing = false;
+
+                Animation fadeOut = new AlphaAnimation(1, 0);
+                fadeOut.setInterpolator(new AccelerateInterpolator()); //and this
+                fadeOut.setDuration(100);
+                floatingAppButtonModel.floatingAppButton.findViewById(R.id.floatingButtonContainer).startAnimation(fadeOut);
+                fadeOut.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        windowManager.removeViewImmediate(floatingAppButtonModel.floatingAppButton);
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     private void initOptionsMenu()
@@ -221,31 +261,92 @@ public class MainMenuService extends Service {
                 overlayType,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
+        optionsMenuModel.isShowing = false;
+
     }
 
     private void setUpOptionsMenu()
     {
         optionsMenuModel.optionsMenu.findViewById(R.id.options).findViewById(R.id.lockScreenButton).setOnClickListener(v ->
         {
-            removeOptionsMenu();
-            displayLockedScreen();
+            if (optionsMenuModel.isShowing)
+            {
+                removeOptionsMenu();
+                removeFloatingAppButton();
+                displayLockedScreen();
+            }
         });
 
         optionsMenuModel.optionsMenu.findViewById(R.id.options).findViewById(R.id.closeAppButton).setOnClickListener(v ->
         {
-            removeOptionsMenu();
-            stopService(new Intent(getApplication(), MainMenuService.class));
+            if (optionsMenuModel.isShowing)
+            {
+                removeOptionsMenu();
+                removeFloatingAppButton();
+                stopService(new Intent(getApplication(), MainMenuService.class));
+            }
+
         });
     }
 
     private void displayOptionsMenu()
     {
-        this.windowManager.addView(optionsMenuModel.optionsMenu, optionsMenuModel.optionsMenuParams);
+
+        optionsMenuModel.optionsMenuParams.y = currHeight/2 - floatingAppButtonModel.floatingAppButton.getHeight() - 75;
+        try
+        {
+            if (!optionsMenuModel.isShowing)
+            {
+                windowManager.addView(optionsMenuModel.optionsMenu, optionsMenuModel.optionsMenuParams);
+                Animation slideUp = AnimationUtils.loadAnimation(getApplication(), R.anim.slide_up);
+                optionsMenuModel.optionsMenu.findViewById(R.id.optionsMenuContainer).startAnimation(slideUp);
+                optionsMenuModel.isShowing = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+
     }
 
     private void removeOptionsMenu()
     {
-        this.windowManager.removeViewImmediate(optionsMenuModel.optionsMenu);
+        try
+        {
+            if (optionsMenuModel.isShowing)
+            {
+                optionsMenuModel.isShowing = false;
+                Animation slideDown = AnimationUtils.loadAnimation(getApplication(), R.anim.slide_down);
+                optionsMenuModel.optionsMenu.findViewById(R.id.optionsMenuContainer).startAnimation(slideDown);
+                slideDown.setAnimationListener(new Animation.AnimationListener()
+                {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        Handler handler = new Handler();
+                        handler.postDelayed(() -> {
+                            windowManager.removeViewImmediate(optionsMenuModel.optionsMenu);
+                            },
+                                10);
+
+                    }
+                });
+
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     private void initLockedScreen()
@@ -393,7 +494,18 @@ public class MainMenuService extends Service {
         lockedScreenModel.lockedScreen.setOnSystemUiVisibilityChangeListener(listener ->
                 lockedScreenModel.lockedScreen.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE)
         );
-        this.windowManager.addView(lockedScreenModel.lockedScreen, lockedScreenModel.lockedScreenParams);
+        try
+        {
+            if (!lockedScreenModel.isShowing)
+            {
+                this.windowManager.addView(lockedScreenModel.lockedScreen, lockedScreenModel.lockedScreenParams);
+                lockedScreenModel.isShowing = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     private void removeLockedScreen()
@@ -402,7 +514,18 @@ public class MainMenuService extends Service {
         {
             lockedScreenModel.lockedScreen.setOnSystemUiVisibilityChangeListener(listener -> { });
             lockedScreenModel.lockedScreen.setSystemUiVisibility(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-            this.windowManager.removeViewImmediate(lockedScreenModel.lockedScreen);
+            try
+            {
+                if (lockedScreenModel.isShowing)
+                {
+                    this.windowManager.removeViewImmediate(lockedScreenModel.lockedScreen);
+                    lockedScreenModel.isShowing = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
             displayFloatingAppButton();
         }
 

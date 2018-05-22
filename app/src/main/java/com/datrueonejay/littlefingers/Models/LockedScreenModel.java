@@ -12,11 +12,12 @@ public class LockedScreenModel {
 
     public final int lockedScreenLayoutAsInt = R.layout.locked_screen;
 
+    public boolean isShowing;
+
     public boolean isButtonOneHeld;
     public boolean isButtonTwoHeld;
     public boolean isButtonThreeHeld;
     public boolean isButtonFourHeld;
-
 
     public WindowManager.LayoutParams lockedScreenParams;
 

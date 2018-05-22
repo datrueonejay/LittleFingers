@@ -1,80 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="200sp"
-    android:layout_height="200sp"
-    >
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
-    <!--<TextView-->
-        <!--android:id="@+id/options_title"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/options_title"-->
-        <!--android:textAlignment="center"-->
-        <!--android:textSize="20sp"-->
-        <!--android:textColor="@color/grey"-->
-        <!--android:layout_marginBottom="10sp"/>-->
+    <!-- Necessary for animations for views added to window manager -->
+ <LinearLayout
+     android:orientation="vertical"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:id="@+id/optionsMenuContainer">
+     <GridLayout
+         android:id="@+id/options"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:columnCount="2"
+         android:rowCount="1"
+         android:background="@drawable/rounded_rectangle">
 
-    <GridLayout
-        android:id="@+id/options"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:columnCount="2"
-        android:rowCount="1"
-        android:background="@drawable/rounded_rectangle">
+         <LinearLayout
+             android:id="@+id/lockScreenButton"
+             android:orientation="vertical"
+             android:layout_columnWeight="1">
 
-        <LinearLayout
-            android:id="@+id/lockScreenButton"
-            android:orientation="vertical"
-            android:layout_columnWeight="1">
+             <TextView
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:text="@string/start_screen_lock"
+                 android:textSize="16sp"
+                 android:textColor="@color/grey"
+                 android:textAlignment="center"
+                 android:layout_gravity="center_horizontal"
+                 android:layout_marginBottom="10sp"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/start_screen_lock"
-                android:textSize="16sp"
-                android:textColor="@color/grey"
-                android:textAlignment="center"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10sp"/>
+             <ImageView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_gravity="center"
+                 android:src="@drawable/ic_lock_black_36dp"/>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_lock_black_36dp"/>
+         </LinearLayout>
 
-        </LinearLayout>
+         <LinearLayout
+             android:id="@+id/closeAppButton"
+             android:orientation="vertical"
+             android:layout_columnWeight="1">
 
-        <LinearLayout
-            android:id="@+id/closeAppButton"
-            android:orientation="vertical"
-            android:layout_columnWeight="1">
+             <TextView
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:text="@string/close_app"
+                 android:textSize="16sp"
+                 android:textColor="@color/grey"
+                 android:textAlignment="center"
+                 android:layout_gravity="center_horizontal"
+                 android:layout_marginBottom="10sp"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/close_app"
-                android:textSize="16sp"
-                android:textColor="@color/grey"
-                android:textAlignment="center"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10sp"/>
+             <ImageView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_gravity="center"
+                 android:src="@drawable/ic_close_circle_black_36dp"/>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_close_circle_black_36dp"/>
+         </LinearLayout>
+     </GridLayout>
 
-        </LinearLayout>
-    </GridLayout>
+     <ImageView
+         android:layout_gravity="center_horizontal"
+         android:layout_width="35sp"
+         android:layout_height="35sp"
+         android:src="@drawable/triangle"
+         android:rotation="180"/>
+ </LinearLayout>
 
-    <ImageView
-        android:layout_gravity="center_horizontal"
-        android:layout_width="35sp"
-        android:layout_height="35sp"
-        android:src="@drawable/triangle"
-        android:rotation="180"/>
+
 
 </LinearLayout>
