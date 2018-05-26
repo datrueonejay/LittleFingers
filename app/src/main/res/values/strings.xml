@@ -7,6 +7,9 @@
     <string name="click_to_start">Click for options</string>
     <string name="options_title">Options</string>
 
-    <string name="start_screen_lock">Start Screen Lock</string>
+    <string name="start_screen_lock">Lock Screen</string>
     <string name="close_app">Close App</string>
+    <string name="help">Help</string>
+
+    <string name="help_instructions">Upon locking the screen, touches on the screen will not be registered (device buttons will still be useable). To exit the lock, hold all 4 corners of the screen for 3 seconds.</string>
 </resources>

@@ -4,6 +4,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.datrueonejay.littlefingers.R;
 
@@ -13,11 +14,12 @@ public class LockedScreenModel {
     public final int lockedScreenLayoutAsInt = R.layout.locked_screen;
 
     public boolean isShowing;
+    public boolean isHelp;
 
-    public boolean isButtonOneHeld;
-    public boolean isButtonTwoHeld;
-    public boolean isButtonThreeHeld;
-    public boolean isButtonFourHeld;
+    public boolean isButtonOneHeld = false;
+    public boolean isButtonTwoHeld = false;
+    public boolean isButtonThreeHeld = false;
+    public boolean isButtonFourHeld = false;
 
     public WindowManager.LayoutParams lockedScreenParams;
 
@@ -27,6 +29,7 @@ public class LockedScreenModel {
     public Button lockedScreenButtonTwo;
     public Button lockedScreenButtonThree;
     public Button lockedScreenButtonFour;
+    public TextView helpInstructions;
 
     public Rect buttonOneBounds;
     public Rect buttonTwoBounds;

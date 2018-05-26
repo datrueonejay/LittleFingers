@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -52,6 +53,10 @@ public class MainMenuService extends Service {
 
     // in milliseconds
     private final int timeToHoldButton = 2000;
+    private final int timeToSlide = 150;
+
+    private final int helpButtonColorPressed = R.color.green;
+    private final int helpButtonColorNotPressed = R.color.red;
     //endregion
 
     @Override
@@ -66,11 +71,9 @@ public class MainMenuService extends Service {
            Display d = windowManager.getDefaultDisplay();
            Point size = new Point();
            d.getSize(size);
-           int width = size.x;
 
            this.metrics = new DisplayMetrics();
            windowManager.getDefaultDisplay().getMetrics(metrics);
-           int a = getResources().getConfiguration().orientation;
            this.deviceWidth = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT
                    ? metrics.widthPixels
                    : metrics.heightPixels;
@@ -176,8 +179,8 @@ public class MainMenuService extends Service {
                             public void onAnimationRepeat(Animator animation) {
                             }
                         });
-                        translationDown.setDuration(500);
-                        translationCenter.setDuration(500);
+                        translationDown.setDuration(timeToSlide);
+                        translationCenter.setDuration(timeToSlide);
                         translationDown.start();
                         translationCenter.start();
 
@@ -285,7 +288,16 @@ public class MainMenuService extends Service {
                 removeFloatingAppButton();
                 stopService(new Intent(getApplication(), MainMenuService.class));
             }
+        });
 
+        optionsMenuModel.optionsMenu.findViewById(R.id.options).findViewById(R.id.helpButton).setOnClickListener( v ->
+        {
+            if (optionsMenuModel.isShowing)
+            {
+                removeOptionsMenu();
+                removeFloatingAppButton();
+                displayHelpScreen();
+            }
         });
     }
 
@@ -307,8 +319,6 @@ public class MainMenuService extends Service {
         {
             ex.printStackTrace();
         }
-
-
     }
 
     private void removeOptionsMenu()
@@ -364,6 +374,7 @@ public class MainMenuService extends Service {
         this.lockedScreenModel.lockedScreenButtonTwo = lockedScreenModel.lockedScreen.findViewById(R.id.buttonTwo);
         this.lockedScreenModel.lockedScreenButtonThree = lockedScreenModel.lockedScreen.findViewById(R.id.buttonThree);
         this.lockedScreenModel.lockedScreenButtonFour = lockedScreenModel.lockedScreen.findViewById(R.id.buttonFour);
+        this.lockedScreenModel.helpInstructions = lockedScreenModel.lockedScreen.findViewById(R.id.helpInstructions);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -396,17 +407,29 @@ public class MainMenuService extends Service {
             {
                 case (MotionEvent.ACTION_DOWN):
                     lockedScreenModel.buttonOneBounds = new Rect(v1.getLeft(), v1.getTop(), v1.getRight(), v1.getBottom());
+                    if (this.lockedScreenModel.isHelp)
+                    {
+                        this.lockedScreenModel.lockedScreenButtonOne.setBackgroundColor(getResources().getColor(helpButtonColorPressed));
+                    }
                     handler.postDelayed(run1, this.timeToHoldButton);
                     break;
                 case (MotionEvent.ACTION_UP):
                     lockedScreenModel.isButtonOneHeld = false;
                     handler.removeCallbacks(run1);
+                    if (this.lockedScreenModel.isHelp)
+                    {
+                        this.lockedScreenModel.lockedScreenButtonOne.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
+                    }
                     v1.performClick();
                     break;
                 case (MotionEvent.ACTION_MOVE):
                     // ensure that the finger is not moved out of bounds
                     if(!lockedScreenModel.buttonOneBounds.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY())){
                         handler.removeCallbacks(run1);
+                        if (this.lockedScreenModel.isHelp)
+                        {
+                            this.lockedScreenModel.lockedScreenButtonOne.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
+                        }
                     }
                 default:
                     return false;
@@ -420,10 +443,18 @@ public class MainMenuService extends Service {
             {
                 case (MotionEvent.ACTION_DOWN):
                     lockedScreenModel.buttonTwoBounds = new Rect(v1.getLeft(), v1.getTop(), v1.getRight(), v1.getBottom());
+                    if (this.lockedScreenModel.isHelp)
+                    {
+                        this.lockedScreenModel.lockedScreenButtonTwo.setBackgroundColor(getResources().getColor(helpButtonColorPressed));
+                    }
                     handler.postDelayed(run2, this.timeToHoldButton);
                     break;
                 case (MotionEvent.ACTION_UP):
                     handler.removeCallbacks(run2);
+                    if (this.lockedScreenModel.isHelp)
+                    {
+                        this.lockedScreenModel.lockedScreenButtonTwo.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
+                    }
                     lockedScreenModel.isButtonTwoHeld = false;
                     v1.performClick();
                     break;
@@ -431,6 +462,10 @@ public class MainMenuService extends Service {
                     // ensure that the finger is not moved out of bounds
                     if(!lockedScreenModel.buttonTwoBounds.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY())){
                         handler.removeCallbacks(run2);
+                        if (this.lockedScreenModel.isHelp)
+                        {
+                            this.lockedScreenModel.lockedScreenButtonTwo.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
+                        }
                     }
                 default:
                     return false;
@@ -445,15 +480,27 @@ public class MainMenuService extends Service {
                 case (MotionEvent.ACTION_DOWN):
                     lockedScreenModel.buttonThreeBounds = new Rect(v1.getLeft(), v1.getTop(), v1.getRight(), v1.getBottom());
                     handler.postDelayed(run3, this.timeToHoldButton);
+                    if (this.lockedScreenModel.isHelp)
+                    {
+                        this.lockedScreenModel.lockedScreenButtonThree.setBackgroundColor(getResources().getColor(helpButtonColorPressed));
+                    }
                     break;
                 case (MotionEvent.ACTION_UP):
                     lockedScreenModel.isButtonThreeHeld = false;
+                    if (this.lockedScreenModel.isHelp)
+                    {
+                        this.lockedScreenModel.lockedScreenButtonThree.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
+                    }
                     v1.performClick();
                     break;
                 case (MotionEvent.ACTION_MOVE):
                     // ensure that the finger is not moved out of bounds
                     if(!lockedScreenModel.buttonThreeBounds.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY())){
                         handler.removeCallbacks(run3);
+                        if (this.lockedScreenModel.isHelp)
+                        {
+                            this.lockedScreenModel.lockedScreenButtonThree.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
+                        }
                     }
                 default:
                     return false;
@@ -467,16 +514,28 @@ public class MainMenuService extends Service {
             {
                 case (MotionEvent.ACTION_DOWN):
                     lockedScreenModel.buttonFourBounds = new Rect(v1.getLeft(), v1.getTop(), v1.getRight(), v1.getBottom());
+                    if (this.lockedScreenModel.isHelp)
+                    {
+                        this.lockedScreenModel.lockedScreenButtonFour.setBackgroundColor(getResources().getColor(helpButtonColorPressed));
+                    }
                     handler.postDelayed(run4, this.timeToHoldButton);
                     break;
                 case (MotionEvent.ACTION_UP):
                     lockedScreenModel.isButtonFourHeld = false;
+                    if (this.lockedScreenModel.isHelp)
+                    {
+                        this.lockedScreenModel.lockedScreenButtonFour.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
+                    }
                     v1.performClick();
                     break;
                 case (MotionEvent.ACTION_MOVE):
                     // ensure that the finger is not moved out of bounds
                     if(!lockedScreenModel.buttonFourBounds.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY())){
                         handler.removeCallbacks(run4);
+                        if (this.lockedScreenModel.isHelp)
+                        {
+                            this.lockedScreenModel.lockedScreenButtonFour.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
+                        }
                     }
                 default:
                     return false;
@@ -484,6 +543,7 @@ public class MainMenuService extends Service {
             return true;
         });
 
+        lockedScreenModel.helpInstructions.setVisibility(View.INVISIBLE);
     }
 
     private void displayLockedScreen()
@@ -508,12 +568,42 @@ public class MainMenuService extends Service {
         }
     }
 
+    private void displayHelpScreen()
+    {
+        this.lockedScreenModel.isHelp = true;
+        this.lockedScreenModel.lockedScreenButtonOne.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
+        this.lockedScreenModel.lockedScreenButtonTwo.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
+        this.lockedScreenModel.lockedScreenButtonThree.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
+        this.lockedScreenModel.lockedScreenButtonFour.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
+        this.lockedScreenModel.helpInstructions.setVisibility(View.VISIBLE);
+        displayLockedScreen();
+    }
+
+    private void removeHelpScreen()
+    {
+        this.lockedScreenModel.isHelp = false;
+        this.lockedScreenModel.lockedScreenButtonOne.setBackgroundColor(Color.TRANSPARENT);
+        this.lockedScreenModel.lockedScreenButtonTwo.setBackgroundColor(Color.TRANSPARENT);
+        this.lockedScreenModel.lockedScreenButtonThree.setBackgroundColor(Color.TRANSPARENT);
+        this.lockedScreenModel.lockedScreenButtonFour.setBackgroundColor(Color.TRANSPARENT);
+        this.lockedScreenModel.helpInstructions.setVisibility(View.GONE);
+    }
+
     private void removeLockedScreen()
     {
-        if (lockedScreenModel.isButtonOneHeld)
+        if (lockedScreenModel.isButtonOneHeld && lockedScreenModel.isButtonTwoHeld && lockedScreenModel.isButtonThreeHeld && lockedScreenModel.isButtonFourHeld)
         {
+            lockedScreenModel.isButtonOneHeld = false;
+            lockedScreenModel.isButtonTwoHeld = false;
+            lockedScreenModel.isButtonThreeHeld = false;
+            lockedScreenModel.isButtonFourHeld = false;
+
             lockedScreenModel.lockedScreen.setOnSystemUiVisibilityChangeListener(listener -> { });
             lockedScreenModel.lockedScreen.setSystemUiVisibility(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            if (this.lockedScreenModel.isHelp)
+            {
+                removeHelpScreen();
+            }
             try
             {
                 if (lockedScreenModel.isShowing)
@@ -538,9 +628,12 @@ public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
 
     // Checks the orientation of the screen
+    // Sets height so views layouts add in right spots
     if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        windowManager.getDefaultDisplay().getMetrics(metrics);
         this.currHeight = metrics.heightPixels;
     } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+        windowManager.getDefaultDisplay().getMetrics(metrics);
         this.currHeight = metrics.heightPixels;
     }
 }
