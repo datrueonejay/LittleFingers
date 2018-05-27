@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.datrueonejay.littlefingers">
+    package="com.datrueonejay.littlefingers">
 
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-    <uses-permission android:name="android.permission.REORDER_TASKS"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
 
     <application
         android:allowBackup="true"
@@ -24,8 +24,8 @@
             android:name=".Services.MainMenuService"
             android:configChanges="orientation|screenSize"
             android:enabled="true"
-            android:exported="true">
-        </service>
+            android:exported="true" />
+
     </application>
 
 </manifest>

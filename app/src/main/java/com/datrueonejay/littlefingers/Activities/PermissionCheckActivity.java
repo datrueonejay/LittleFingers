@@ -1,7 +1,7 @@
 package com.datrueonejay.littlefingers.Activities;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,79 +14,65 @@ import android.widget.TextView;
 
 import com.datrueonejay.littlefingers.R;
 import com.datrueonejay.littlefingers.Services.MainMenuService;
-import com.datrueonejay.littlefingers.ViewModels.PermissionCheckViewModel;
 
 public class PermissionCheckActivity extends AppCompatActivity {
 
     //region Properties
     private final static int OVERLAY_REQUEST_CODE = 0;
     private Context _context;
-    private PermissionCheckViewModel permissionCheckViewModel;
-    private int mainMenuLayout = R.layout.menu_button;
     //endregion
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         this._context = this.getApplicationContext();
 
-        permissionCheckViewModel = ViewModelProviders.of(this).get(PermissionCheckViewModel.class);
-
         // if below android M, permission is granted at install time, otherwise check if permission has been given
         boolean canDrawOverlay = Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1 || Settings.canDrawOverlays(this._context);
-        permissionCheckViewModel.getIsPermissionEnabled().setValue(canDrawOverlay);
 
         // ask permission to draw over apps if we do not have
-        if (!permissionCheckViewModel.getIsPermissionEnabled().getValue())
+        if (!canDrawOverlay)
         {
             setContentView(R.layout.activity_permission_check);
             TextView descriptionTextView = findViewById(R.id.permissionDescription);
-            Button continueButton = findViewById(R.id.continueButton);
+            Button permissionButton = findViewById(R.id.continueButton);
 
-            permissionCheckViewModel.getIsPermissionEnabled().observe(this, isPermissionEnabled -> {
-                boolean hasPermission = permissionCheckViewModel.getIsPermissionEnabled().getValue();
-
-                String descriptionText = hasPermission
-                        ? getResources().getString(R.string.permission_description_true)
-                        : getResources().getString(R.string.permission_description_false);
-                descriptionTextView.setText(descriptionText);
-
-                int buttonColor = hasPermission
-                        ? getResources().getColor(R.color.green)
-                        : getResources().getColor(R.color.red);
-
-                String buttonText = hasPermission
-                        ? getResources().getString(R.string.yes_permission_button_description)
-                        : getResources().getString(R.string.no_permission_button_description);
-                continueButton.setBackgroundColor(buttonColor);
-                continueButton.setText(buttonText);
-            });
-            // set to false since permission is not given, to update initial UI
-            permissionCheckViewModel.getIsPermissionEnabled().setValue(false);
-
-            continueButton.setOnClickListener(button -> {
-                if (permissionCheckViewModel.getIsPermissionEnabled().getValue())
+            // if android o set up layout so they must restart app after giving permission
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O)
+            {
+                // set text to android o text
+                descriptionTextView.setText(R.string.permission_description_false_android_o);
+                Button restartAppButton = findViewById(R.id.restartButton);
+               // restartAppButton.setVisibility(View.VISIBLE);
+                restartAppButton.setOnTouchListener((view, event) ->
                 {
-                    this.startMainMenuService(mainMenuLayout);
-                    finish();
-                }
-                else
-                {
-                    promptDrawOverPermission();
-                }
+                    if (Settings.canDrawOverlays(this._context))
+                    {
+                        finishAndRemoveTask();
+                        startMainMenuService();
+                    }
+                    return false;
+                });
+            }
+            // otherwise set up normal text
+            else
+            {
+                descriptionTextView.setText(R.string.permission_description_false);
+            }
+            permissionButton.setOnClickListener(listener -> {
+                promptDrawOverPermission();
             });
+
         }
         // start the service if we already have permission
         else
         {
-            this.startMainMenuService(mainMenuLayout);
-            finish();
+            this.startMainMenuService();
+            finishAndRemoveTask();
         }
     }
-
-
-
     //region Private Methods
     @TargetApi(23)
     private void promptDrawOverPermission()
@@ -98,7 +84,7 @@ public class PermissionCheckActivity extends AppCompatActivity {
 
     }
 
-    private void startMainMenuService(int layout)
+    public void startMainMenuService()
     {
         Intent mainMenuService = new Intent(this._context, MainMenuService.class);
         this._context.startService(mainMenuService);
@@ -114,18 +100,16 @@ public class PermissionCheckActivity extends AppCompatActivity {
         switch (requestCode)
         {
             case (OVERLAY_REQUEST_CODE):
-                if (Settings.canDrawOverlays(this._context))
+                if (Settings.canDrawOverlays(this))
                 {
-                    permissionCheckViewModel.getIsPermissionEnabled().setValue(true);
+                    this.startMainMenuService();
+                    finishAndRemoveTask();
                 }
                 break;
 
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }
-
     }
     //endregion
-
-
 }

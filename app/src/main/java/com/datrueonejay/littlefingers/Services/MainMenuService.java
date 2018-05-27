@@ -20,19 +20,15 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.TranslateAnimation;
 
 import com.datrueonejay.littlefingers.Models.*;
 import com.datrueonejay.littlefingers.R;
-
-import java.io.Console;
 
 public class MainMenuService extends Service {
 
@@ -79,7 +75,7 @@ public class MainMenuService extends Service {
                    : metrics.heightPixels;
            this.currHeight = metrics.heightPixels;
            // need to check based on api version with overlay type is
-           this.overlayType = Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1
+           this.overlayType = Build.VERSION.SDK_INT < Build.VERSION_CODES.O
                    ? WindowManager.LayoutParams.TYPE_PHONE
                    : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
 
@@ -365,7 +361,7 @@ public class MainMenuService extends Service {
         this.lockedScreenModel.lockedScreenParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
+                overlayType,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 PixelFormat.TRANSLUCENT);
 
@@ -548,12 +544,16 @@ public class MainMenuService extends Service {
 
     private void displayLockedScreen()
     {
-        // ensure locked screen is full screen
-        lockedScreenModel.lockedScreen.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE);
-        // hides notification bar and nav bar if user swipes them
-        lockedScreenModel.lockedScreen.setOnSystemUiVisibilityChangeListener(listener ->
-                lockedScreenModel.lockedScreen.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE)
-        );
+        // hides notification bar and nav bar if user swipes them, only available for api before oreo
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+        {
+            // ensure locked screen is full screen
+            lockedScreenModel.lockedScreen.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE);
+            lockedScreenModel.lockedScreen.setOnSystemUiVisibilityChangeListener(listener ->
+                    lockedScreenModel.lockedScreen.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE)
+            );
+        }
+
         try
         {
             if (!lockedScreenModel.isShowing)
@@ -598,8 +598,13 @@ public class MainMenuService extends Service {
             lockedScreenModel.isButtonThreeHeld = false;
             lockedScreenModel.isButtonFourHeld = false;
 
-            lockedScreenModel.lockedScreen.setOnSystemUiVisibilityChangeListener(listener -> { });
-            lockedScreenModel.lockedScreen.setSystemUiVisibility(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            // reset system ui, only available for api before oreo
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            {
+                lockedScreenModel.lockedScreen.setOnSystemUiVisibilityChangeListener(listener -> { });
+                lockedScreenModel.lockedScreen.setSystemUiVisibility(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            }
+
             if (this.lockedScreenModel.isHelp)
             {
                 removeHelpScreen();
@@ -623,27 +628,19 @@ public class MainMenuService extends Service {
     //endregion
 
     // region Overriden Methods
-@Override
-public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
-    // Checks the orientation of the screen
-    // Sets height so views layouts add in right spots
-    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        windowManager.getDefaultDisplay().getMetrics(metrics);
-        this.currHeight = metrics.heightPixels;
-    } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-        windowManager.getDefaultDisplay().getMetrics(metrics);
-        this.currHeight = metrics.heightPixels;
+        // Checks the orientation of the screen
+        // Sets height so views layouts add in right spots
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            windowManager.getDefaultDisplay().getMetrics(metrics);
+            this.currHeight = metrics.heightPixels;
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            windowManager.getDefaultDisplay().getMetrics(metrics);
+            this.currHeight = metrics.heightPixels;
+        }
     }
-}
-//    @Override
-//    public void onDestroy()
-//    {
-//        if (this.floatingAppButton != null)
-//        {
-//        }
-//        super.onDestroy();
-//    }
     // endregion
 }
