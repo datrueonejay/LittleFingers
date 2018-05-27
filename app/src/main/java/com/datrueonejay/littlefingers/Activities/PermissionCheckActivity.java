@@ -9,6 +9,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -45,7 +46,7 @@ public class PermissionCheckActivity extends AppCompatActivity {
                 // set text to android o text
                 descriptionTextView.setText(R.string.permission_description_false_android_o);
                 Button restartAppButton = findViewById(R.id.restartButton);
-               // restartAppButton.setVisibility(View.VISIBLE);
+                restartAppButton.setVisibility(View.VISIBLE);
                 restartAppButton.setOnTouchListener((view, event) ->
                 {
                     if (Settings.canDrawOverlays(this._context))

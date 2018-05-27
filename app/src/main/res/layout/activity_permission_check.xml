@@ -40,6 +40,7 @@
         android:background="@color/green"
         android:text="@string/restartApp"
         android:textColor="@color/grey"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
