@@ -13,6 +13,11 @@ public class FloatingAppButtonModel {
 
     public float currX;
     public float currY;
+
+    public float pressDownRawX;
+    public float pressDownRawY;
+
+
     public int lastAction;
 
     public WindowManager.LayoutParams floatingAppButtonParams;

@@ -2,6 +2,7 @@ package com.datrueonejay.littlefingers.Activities;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,9 +10,11 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.datrueonejay.littlefingers.R;
 import com.datrueonejay.littlefingers.Services.MainMenuService;
@@ -37,34 +40,36 @@ public class PermissionCheckActivity extends AppCompatActivity {
         if (!canDrawOverlay)
         {
             setContentView(R.layout.activity_permission_check);
-            TextView descriptionTextView = findViewById(R.id.permissionDescription);
+            // work around to set the title as grey
+            getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#556270\">" + getString(R.string.app_name) + "</font>"));
+
+            //TextView descriptionTextView = findViewById(R.id.permissionDescription);
             Button permissionButton = findViewById(R.id.continueButton);
 
             // if android o set up layout so they must restart app after giving permission
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O)
-            {
-                // set text to android o text
-                descriptionTextView.setText(R.string.permission_description_false_android_o);
-                Button restartAppButton = findViewById(R.id.restartButton);
-                restartAppButton.setVisibility(View.VISIBLE);
-                restartAppButton.setOnTouchListener((view, event) ->
-                {
-                    if (Settings.canDrawOverlays(this._context))
-                    {
-                        finishAndRemoveTask();
-                        startMainMenuService();
-                    }
-                    return false;
-                });
-            }
-            // otherwise set up normal text
-            else
-            {
-                descriptionTextView.setText(R.string.permission_description_false);
-            }
-            permissionButton.setOnClickListener(listener -> {
-                promptDrawOverPermission();
-            });
+            // this issue was fixed in a Google security patch, and is thus unused atm
+//            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O)
+//            {
+//                // set text to android o text
+//                descriptionTextView.setText(R.string.permission_description_false_android_o);
+//                Button restartAppButton = findViewById(R.id.restartButton);
+//                restartAppButton.setVisibility(View.VISIBLE);
+//                restartAppButton.setOnTouchListener((view, event) ->
+//                {
+//                    if (Settings.canDrawOverlays(this._context))
+//                    {
+//                        finishAndRemoveTask();
+//                        startMainMenuService();
+//                    }
+//                    return false;
+//                });
+//            }
+//            // otherwise set up normal text
+//            else
+//            {
+//                descriptionTextView.setText(R.string.permission_description_false);
+//            }
+            permissionButton.setOnClickListener(listener -> promptDrawOverPermission());
 
         }
         // start the service if we already have permission

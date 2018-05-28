@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">LittleFingers</string>
-    <string name="permission_description_false">Please ensure the app can draw over apps.</string>
+    <string name="permission_description_false">Please ensure the app has permission to draw over other apps. After giving permission, press the app icon to use the app.</string>
     <string name="permission_description_false_android_o">Please ensure the app can draw over apps. After giving permission, please restart the app.</string>
     <string name="permission_description_true">You now have given permission, please continue.</string>
     <string name="no_permission_button_description">Click to give permission</string>

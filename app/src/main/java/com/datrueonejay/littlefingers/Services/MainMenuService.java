@@ -51,6 +51,8 @@ public class MainMenuService extends Service {
     private final int timeToHoldButton = 2000;
     private final int timeToSlide = 150;
 
+    private final int slackPixelMovement = 15;
+
     private final int helpButtonColorPressed = R.color.green;
     private final int helpButtonColorNotPressed = R.color.red;
     //endregion
@@ -120,8 +122,10 @@ public class MainMenuService extends Service {
             {
                 case MotionEvent.ACTION_DOWN:
                 {
-                    floatingAppButtonModel.currX = floatingAppButtonModel.floatingAppButtonParams.x - event.getRawX();
-                    floatingAppButtonModel.currY = floatingAppButtonModel.floatingAppButtonParams.y - event.getRawY();
+                    floatingAppButtonModel.pressDownRawX = event.getRawX();
+                    floatingAppButtonModel.pressDownRawY = event.getRawY();
+                    floatingAppButtonModel.currX = floatingAppButtonModel.floatingAppButtonParams.x - floatingAppButtonModel.pressDownRawX;
+                    floatingAppButtonModel.currY = floatingAppButtonModel.floatingAppButtonParams.y - floatingAppButtonModel.pressDownRawY;
                     floatingAppButtonModel.lastAction = MotionEvent.ACTION_DOWN;
                     break;
                 }
@@ -131,57 +135,26 @@ public class MainMenuService extends Service {
                     // see how far input moved
                     float movedY = event.getRawY() + floatingAppButtonModel.currY;
                     float movedX = event.getRawX() + floatingAppButtonModel.currX;
+
                     // ensure the window moves
                     floatingAppButtonModel.floatingAppButtonParams.y = (int)movedY;
                     floatingAppButtonModel.floatingAppButtonParams.x = (int)movedX;
                     windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
-
-                    floatingAppButtonModel.lastAction = MotionEvent.ACTION_MOVE;
                     removeOptionsMenu();
+
+                    // check if the distance moved is greater than certain amount of pixels, if it is assume user wants to move button
+
                     break;
                 }
 
                 case MotionEvent.ACTION_UP:
                 {
-                    if (floatingAppButtonModel.lastAction == MotionEvent.ACTION_DOWN)
+                    // move menu only if last movement was not a certain amount of pixels
+                    if (Math.abs(floatingAppButtonModel.pressDownRawX - event.getRawX()) < slackPixelMovement
+                            && Math.abs(floatingAppButtonModel.pressDownRawY - event.getRawY()) < slackPixelMovement)
                     {
                         view.performClick();
-                        ValueAnimator translationDown = ValueAnimator.ofFloat(floatingAppButtonModel.floatingAppButtonParams.y, currHeight/2 - floatingAppButtonModel.floatingAppButton.getHeight()/2);
-                        ValueAnimator translationCenter = ValueAnimator.ofFloat(floatingAppButtonModel.floatingAppButtonParams.x, 0);
-                        translationCenter.addUpdateListener(animation -> {
-                            floatingAppButtonModel.floatingAppButtonParams.x = Math.round((float)translationCenter.getAnimatedValue());
-                            windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
-                        });
-                        translationDown.addUpdateListener(animation -> {
-                            floatingAppButtonModel.floatingAppButtonParams.y = Math.round((float)translationDown.getAnimatedValue());
-                            windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
-                        });
-
-                        translationDown.addListener(new Animator.AnimatorListener() {
-                            @Override
-                            public void onAnimationStart(Animator animation) {
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                displayOptionsMenu();
-                            }
-
-                            @Override
-                            public void onAnimationCancel(Animator animation) {
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animator animation) {
-                            }
-                        });
-                        translationDown.setDuration(timeToSlide);
-                        translationCenter.setDuration(timeToSlide);
-                        translationDown.start();
-                        translationCenter.start();
-
-                        windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
-
+                        clickFloatingActionButton();
                     }
                 }
                 default:
@@ -624,6 +597,45 @@ public class MainMenuService extends Service {
             displayFloatingAppButton();
         }
 
+    }
+
+    private void clickFloatingActionButton()
+    {
+        ValueAnimator translationDown = ValueAnimator.ofFloat(floatingAppButtonModel.floatingAppButtonParams.y, currHeight/2 - floatingAppButtonModel.floatingAppButton.getHeight()/2);
+        ValueAnimator translationCenter = ValueAnimator.ofFloat(floatingAppButtonModel.floatingAppButtonParams.x, 0);
+        translationCenter.addUpdateListener(animation -> {
+            floatingAppButtonModel.floatingAppButtonParams.x = Math.round((float)translationCenter.getAnimatedValue());
+            windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
+        });
+        translationDown.addUpdateListener(animation -> {
+            floatingAppButtonModel.floatingAppButtonParams.y = Math.round((float)translationDown.getAnimatedValue());
+            windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
+        });
+
+        translationDown.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                displayOptionsMenu();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+        translationDown.setDuration(timeToSlide);
+        translationCenter.setDuration(timeToSlide);
+        translationDown.start();
+        translationCenter.start();
+
+        windowManager.updateViewLayout(floatingAppButtonModel.floatingAppButton, floatingAppButtonModel.floatingAppButtonParams);
     }
     //endregion
 
