@@ -11,7 +11,7 @@
         android:id="@+id/buttonOne"
         android:layout_width="75sp"
         android:layout_height="75sp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/transition_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -19,7 +19,7 @@
         android:id="@+id/buttonTwo"
         android:layout_width="75sp"
         android:layout_height="75sp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/transition_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -27,7 +27,7 @@
         android:id="@+id/buttonThree"
         android:layout_width="75sp"
         android:layout_height="75sp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/transition_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
@@ -35,7 +35,7 @@
         android:id="@+id/buttonFour"
         android:layout_width="75sp"
         android:layout_height="75sp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/transition_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

@@ -1,6 +1,8 @@
 package com.datrueonejay.littlefingers.Services;
 
 import android.animation.Animator;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -11,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -344,6 +347,11 @@ public class MainMenuService extends Service {
         this.lockedScreenModel.lockedScreenButtonThree = lockedScreenModel.lockedScreen.findViewById(R.id.buttonThree);
         this.lockedScreenModel.lockedScreenButtonFour = lockedScreenModel.lockedScreen.findViewById(R.id.buttonFour);
         this.lockedScreenModel.helpInstructions = lockedScreenModel.lockedScreen.findViewById(R.id.helpInstructions);
+
+        this.lockedScreenModel.buttonOneTransition = (TransitionDrawable) lockedScreenModel.lockedScreenButtonOne.getBackground();
+        this.lockedScreenModel.buttonTwoTransition = (TransitionDrawable) lockedScreenModel.lockedScreenButtonTwo.getBackground();
+        this.lockedScreenModel.buttonThreeTransition = (TransitionDrawable) lockedScreenModel.lockedScreenButtonThree.getBackground();
+        this.lockedScreenModel.buttonFourTransition = (TransitionDrawable) lockedScreenModel.lockedScreenButtonFour.getBackground();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -376,29 +384,21 @@ public class MainMenuService extends Service {
             {
                 case (MotionEvent.ACTION_DOWN):
                     lockedScreenModel.buttonOneBounds = new Rect(v1.getLeft(), v1.getTop(), v1.getRight(), v1.getBottom());
-                    if (this.lockedScreenModel.isHelp)
-                    {
-                        this.lockedScreenModel.lockedScreenButtonOne.setBackgroundColor(getResources().getColor(helpButtonColorPressed));
-                    }
+                    lockedScreenModel.buttonOneTransition.startTransition(timeToHoldButton);
                     handler.postDelayed(run1, this.timeToHoldButton);
                     break;
                 case (MotionEvent.ACTION_UP):
                     lockedScreenModel.isButtonOneHeld = false;
                     handler.removeCallbacks(run1);
-                    if (this.lockedScreenModel.isHelp)
-                    {
-                        this.lockedScreenModel.lockedScreenButtonOne.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
-                    }
+                    lockedScreenModel.buttonOneTransition.resetTransition();
                     v1.performClick();
                     break;
                 case (MotionEvent.ACTION_MOVE):
                     // ensure that the finger is not moved out of bounds
-                    if(!lockedScreenModel.buttonOneBounds.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY())){
+                    if(!lockedScreenModel.buttonOneBounds.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY()))
+                    {
                         handler.removeCallbacks(run1);
-                        if (this.lockedScreenModel.isHelp)
-                        {
-                            this.lockedScreenModel.lockedScreenButtonOne.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
-                        }
+                        lockedScreenModel.buttonOneTransition.resetTransition();
                     }
                 default:
                     return false;
@@ -412,18 +412,12 @@ public class MainMenuService extends Service {
             {
                 case (MotionEvent.ACTION_DOWN):
                     lockedScreenModel.buttonTwoBounds = new Rect(v1.getLeft(), v1.getTop(), v1.getRight(), v1.getBottom());
-                    if (this.lockedScreenModel.isHelp)
-                    {
-                        this.lockedScreenModel.lockedScreenButtonTwo.setBackgroundColor(getResources().getColor(helpButtonColorPressed));
-                    }
+                    lockedScreenModel.buttonTwoTransition.startTransition(timeToHoldButton);
                     handler.postDelayed(run2, this.timeToHoldButton);
                     break;
                 case (MotionEvent.ACTION_UP):
                     handler.removeCallbacks(run2);
-                    if (this.lockedScreenModel.isHelp)
-                    {
-                        this.lockedScreenModel.lockedScreenButtonTwo.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
-                    }
+                    lockedScreenModel.buttonTwoTransition.resetTransition();
                     lockedScreenModel.isButtonTwoHeld = false;
                     v1.performClick();
                     break;
@@ -431,10 +425,7 @@ public class MainMenuService extends Service {
                     // ensure that the finger is not moved out of bounds
                     if(!lockedScreenModel.buttonTwoBounds.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY())){
                         handler.removeCallbacks(run2);
-                        if (this.lockedScreenModel.isHelp)
-                        {
-                            this.lockedScreenModel.lockedScreenButtonTwo.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
-                        }
+                        lockedScreenModel.buttonTwoTransition.resetTransition();
                     }
                 default:
                     return false;
@@ -449,27 +440,18 @@ public class MainMenuService extends Service {
                 case (MotionEvent.ACTION_DOWN):
                     lockedScreenModel.buttonThreeBounds = new Rect(v1.getLeft(), v1.getTop(), v1.getRight(), v1.getBottom());
                     handler.postDelayed(run3, this.timeToHoldButton);
-                    if (this.lockedScreenModel.isHelp)
-                    {
-                        this.lockedScreenModel.lockedScreenButtonThree.setBackgroundColor(getResources().getColor(helpButtonColorPressed));
-                    }
+                    lockedScreenModel.buttonThreeTransition.startTransition(timeToHoldButton);
                     break;
                 case (MotionEvent.ACTION_UP):
                     lockedScreenModel.isButtonThreeHeld = false;
-                    if (this.lockedScreenModel.isHelp)
-                    {
-                        this.lockedScreenModel.lockedScreenButtonThree.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
-                    }
+                    lockedScreenModel.buttonThreeTransition.resetTransition();
                     v1.performClick();
                     break;
                 case (MotionEvent.ACTION_MOVE):
                     // ensure that the finger is not moved out of bounds
                     if(!lockedScreenModel.buttonThreeBounds.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY())){
                         handler.removeCallbacks(run3);
-                        if (this.lockedScreenModel.isHelp)
-                        {
-                            this.lockedScreenModel.lockedScreenButtonThree.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
-                        }
+                        lockedScreenModel.buttonThreeTransition.resetTransition();
                     }
                 default:
                     return false;
@@ -483,28 +465,19 @@ public class MainMenuService extends Service {
             {
                 case (MotionEvent.ACTION_DOWN):
                     lockedScreenModel.buttonFourBounds = new Rect(v1.getLeft(), v1.getTop(), v1.getRight(), v1.getBottom());
-                    if (this.lockedScreenModel.isHelp)
-                    {
-                        this.lockedScreenModel.lockedScreenButtonFour.setBackgroundColor(getResources().getColor(helpButtonColorPressed));
-                    }
+                    lockedScreenModel.buttonFourTransition.startTransition(timeToHoldButton);
                     handler.postDelayed(run4, this.timeToHoldButton);
                     break;
                 case (MotionEvent.ACTION_UP):
                     lockedScreenModel.isButtonFourHeld = false;
-                    if (this.lockedScreenModel.isHelp)
-                    {
-                        this.lockedScreenModel.lockedScreenButtonFour.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
-                    }
+                    lockedScreenModel.buttonFourTransition.resetTransition();
                     v1.performClick();
                     break;
                 case (MotionEvent.ACTION_MOVE):
                     // ensure that the finger is not moved out of bounds
                     if(!lockedScreenModel.buttonFourBounds.contains(v1.getLeft() + (int) e1.getX(), v1.getTop() + (int) e1.getY())){
                         handler.removeCallbacks(run4);
-                        if (this.lockedScreenModel.isHelp)
-                        {
-                            this.lockedScreenModel.lockedScreenButtonFour.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
-                        }
+                        lockedScreenModel.buttonFourTransition.resetTransition();
                     }
                 default:
                     return false;
@@ -543,11 +516,6 @@ public class MainMenuService extends Service {
 
     private void displayHelpScreen()
     {
-        this.lockedScreenModel.isHelp = true;
-        this.lockedScreenModel.lockedScreenButtonOne.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
-        this.lockedScreenModel.lockedScreenButtonTwo.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
-        this.lockedScreenModel.lockedScreenButtonThree.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
-        this.lockedScreenModel.lockedScreenButtonFour.setBackgroundColor(getResources().getColor(helpButtonColorNotPressed));
         this.lockedScreenModel.helpInstructions.setVisibility(View.VISIBLE);
         displayLockedScreen();
     }
@@ -555,10 +523,6 @@ public class MainMenuService extends Service {
     private void removeHelpScreen()
     {
         this.lockedScreenModel.isHelp = false;
-        this.lockedScreenModel.lockedScreenButtonOne.setBackgroundColor(Color.TRANSPARENT);
-        this.lockedScreenModel.lockedScreenButtonTwo.setBackgroundColor(Color.TRANSPARENT);
-        this.lockedScreenModel.lockedScreenButtonThree.setBackgroundColor(Color.TRANSPARENT);
-        this.lockedScreenModel.lockedScreenButtonFour.setBackgroundColor(Color.TRANSPARENT);
         this.lockedScreenModel.helpInstructions.setVisibility(View.GONE);
     }
 
@@ -570,6 +534,12 @@ public class MainMenuService extends Service {
             lockedScreenModel.isButtonTwoHeld = false;
             lockedScreenModel.isButtonThreeHeld = false;
             lockedScreenModel.isButtonFourHeld = false;
+
+            lockedScreenModel.buttonOneTransition.resetTransition();
+            lockedScreenModel.buttonTwoTransition.resetTransition();
+            lockedScreenModel.buttonThreeTransition.resetTransition();
+            lockedScreenModel.buttonFourTransition.resetTransition();
+
 
             // reset system ui, only available for api before oreo
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)

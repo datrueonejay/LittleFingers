@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transition xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The drawables used here can be solid colors, gradients, shapes, images, etc. -->
+    <item android:drawable="@drawable/transition_button_original_state"
+        android:height="75sp"
+        android:width="75sp"/>
+    <item android:drawable="@drawable/transition_button_pressed_state"
+        android:height="75sp"
+        android:width="75sp"/>
+</transition>

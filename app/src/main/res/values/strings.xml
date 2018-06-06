@@ -13,5 +13,5 @@
     <string name="close_app">Close App</string>
     <string name="help">Help</string>
 
-    <string name="help_instructions">Upon locking the screen, touches on the screen will not be registered (device buttons and notifications will still be useable). To exit the lock, hold all 4 corners of the screen for 2 seconds.</string>
+    <string name="help_instructions">Upon locking the screen, touches on the screen will not be registered (device buttons and notifications will still be useable). To exit the lock, hold all 4 circles in the corner of the screen for 2 seconds.</string>
 </resources>

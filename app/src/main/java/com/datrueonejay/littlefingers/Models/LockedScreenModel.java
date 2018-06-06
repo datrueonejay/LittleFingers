@@ -1,6 +1,7 @@
 package com.datrueonejay.littlefingers.Models;
 
 import android.graphics.Rect;
+import android.graphics.drawable.TransitionDrawable;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -35,4 +36,10 @@ public class LockedScreenModel {
     public Rect buttonTwoBounds;
     public Rect buttonThreeBounds;
     public Rect buttonFourBounds;
+
+    public TransitionDrawable buttonOneTransition;
+    public TransitionDrawable buttonTwoTransition;
+    public TransitionDrawable buttonThreeTransition;
+    public TransitionDrawable buttonFourTransition;
+
 }
