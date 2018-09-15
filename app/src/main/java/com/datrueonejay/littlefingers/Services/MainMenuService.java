@@ -517,6 +517,7 @@ public class MainMenuService extends Service {
     private void displayHelpScreen()
     {
         this.lockedScreenModel.helpInstructions.setVisibility(View.VISIBLE);
+        this.lockedScreenModel.isHelp = true;
         displayLockedScreen();
     }
 
