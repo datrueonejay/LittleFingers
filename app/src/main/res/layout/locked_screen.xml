@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="0sp"
+    android:background="@android:color/transparent">
+
+    <Button
+        android:id="@+id/buttonOne"
+        android:layout_width="75sp"
+        android:layout_height="75sp"
+        android:background="@drawable/transition_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <Button
+        android:id="@+id/buttonTwo"
+        android:layout_width="75sp"
+        android:layout_height="75sp"
+        android:background="@drawable/transition_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <Button
+        android:id="@+id/buttonThree"
+        android:layout_width="75sp"
+        android:layout_height="75sp"
+        android:background="@drawable/transition_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <Button
+        android:id="@+id/buttonFour"
+        android:layout_width="75sp"
+        android:layout_height="75sp"
+        android:background="@drawable/transition_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:padding="@dimen/options_padding"
+        android:id="@+id/helpInstructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/help_instructions"
+        android:textSize="@dimen/help_text"
+        android:background="@drawable/rounded_rectangle"/>
+
+</android.support.constraint.ConstraintLayout>

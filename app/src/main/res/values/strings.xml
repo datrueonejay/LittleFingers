@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">LittleFingers</string>
+    <string name="permission_description_false">Please ensure the app has permission to draw over other apps. After giving permission, press the app icon to use the app.</string>
+    <string name="permission_description_false_android_o">Please ensure the app can draw over apps. After giving permission, please restart the app.</string>
+    <string name="permission_description_true">You now have given permission, please continue.</string>
+    <string name="no_permission_button_description">Click to give permission</string>
+    <string name="yes_permission_button_description">Click to continue</string>
+    <string name="click_to_start">Click for options</string>
+    <string name="options_title">Options</string>
+    <string name="restartApp">Restart App</string>
+
+    <string name="start_screen_lock">Lock Screen</string>
+    <string name="close_app">Close App</string>
+    <string name="help">Help</string>
+
+    <string name="help_instructions">Upon locking the screen, touches on the screen will not be registered (device buttons and notifications will still be useable). To exit the lock, hold all 4 circles in the corner of the screen for 2 seconds.</string>
 </resources>
